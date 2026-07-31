@@ -33,4 +33,27 @@ document.getElementById('form-contacto').addEventListener('submit', async (e) =>
 
   alert('Contacto agregado');
   e.target.reset();
+  cargarContactos();
 });
+
+async function cargarContactos() {
+  const res = await fetch('/contactos');
+  const contactos = await res.json();
+
+  const tbody = document.getElementById('tabla-body');
+  tbody.innerHTML = '';
+
+  contactos.forEach(c => {
+    const fila = document.createElement('tr');
+    fila.innerHTML = `
+      <td>${c.nombre}</td>
+      <td>${c.telefono}</td>
+      <td>${c.email}</td>
+      <td>${c.empresa || ''}</td>
+    `;
+    tbody.appendChild(fila);
+  });
+}
+
+// Cargar la tabla al abrir la página
+document.addEventListener('DOMContentLoaded', cargarContactos);
