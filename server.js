@@ -37,4 +37,24 @@ app.post('/contactos', (req, res) => {
   res.status(201).json(nuevo);
 });
 
+app.put('/contactos/:id', (req, res) => {
+  const contactos = leerContactos();
+  const index = contactos.findIndex(c => c.id === req.params.id);
+  if (index === -1) return res.status(404).json({ error: 'No encontrado' });
+
+  contactos[index] = { ...contactos[index], ...req.body };
+  guardarContactos(contactos);
+  res.json(contactos[index]);
+});
+
+app.delete('/contactos/:id', (req, res) => {
+  let contactos = leerContactos();
+  const existe = contactos.some(c => c.id === req.params.id);
+  if (!existe) return res.status(404).json({ error: 'No encontrado' });
+
+  contactos = contactos.filter(c => c.id !== req.params.id);
+  guardarContactos(contactos);
+  res.json({ mensaje: 'Contacto eliminado' });
+});
+
 app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));

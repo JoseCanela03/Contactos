@@ -50,9 +50,48 @@ async function cargarContactos() {
       <td>${c.telefono}</td>
       <td>${c.email}</td>
       <td>${c.empresa || ''}</td>
+      <td>
+        <button onclick="editarContacto('${c.id}')">Editar</button>
+        <button onclick="eliminarContacto('${c.id}')">Eliminar</button>
+      </td>
     `;
     tbody.appendChild(fila);
   });
+}
+
+async function eliminarContacto(id) {
+  if (!confirm('¿Seguro que deseas eliminar este contacto?')) return;
+  await fetch(`/contactos/${id}`, { method: 'DELETE' });
+  cargarContactos();
+}
+
+async function editarContacto(id) {
+  const res = await fetch(`/contactos/${id}`);
+  const contacto = await res.json();
+
+  const nuevoNombre = prompt('Nombre:', contacto.nombre);
+  if (nuevoNombre === null) return;
+
+  const nuevoTelefono = prompt('Teléfono:', contacto.telefono);
+  if (nuevoTelefono === null) return;
+
+  const nuevoEmail = prompt('Email:', contacto.email);
+  if (nuevoEmail === null) return;
+
+  const nuevaEmpresa = prompt('Empresa:', contacto.empresa || '');
+
+  await fetch(`/contactos/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nombre: nuevoNombre,
+      telefono: nuevoTelefono,
+      email: nuevoEmail,
+      empresa: nuevaEmpresa
+    })
+  });
+
+  cargarContactos();
 }
 
 // Cargar la tabla al abrir la página
