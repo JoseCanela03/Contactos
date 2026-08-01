@@ -11,11 +11,13 @@ document.getElementById('form-contacto').addEventListener('submit', async (e) =>
     return;
   }
 
-  const telefonoRegex = /^[0-9]{7,15}$/;
-  if (!telefonoRegex.test(telefono)) {
-    alert('El teléfono debe contener solo números (7 a 15 dígitos)');
-    return;
-  }
+  const telefonoLimpio = telefono.replace(/[\s\-()]/g, '');
+    const telefonoRegex = /^\+?[0-9]{7,15}$/;
+
+    if (!telefonoRegex.test(telefonoLimpio)) {
+      alert('El teléfono debe contener 7 a 15 dígitos (se permite +, espacios y guiones)');
+      return;
+    }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
@@ -23,7 +25,7 @@ document.getElementById('form-contacto').addEventListener('submit', async (e) =>
     return;
   }
 
-  const nuevoContacto = { nombre, telefono, email, empresa };
+  const nuevoContacto = { nombre, telefono: telefonoLimpio, email, empresa };
 
   await fetch('/contactos', {
     method: 'POST',
